@@ -1,24 +1,25 @@
-button = document.createElement("button");
+booksContainer = document.getElementById("books");
+
+let library = [];
+let libraryJson = "";
+
+if(localStorage.myLibrary) {
+       loadLibrary();        
+    }
+ 
+
 
 function loadLibrary() {
-    someBooks.forEach(element => {
-        mylibrary.push(element);
+   library = JSON.parse(localStorage.myLibrary);
+    library.forEach(element => {
         createCard(element);
     })
 
 }
-booksContainer = document.getElementById("books");
-let mylibrary = [
-];//Title Author Isbn read
-const someBooks = [{
 
-    title: "The end of the world",
-    author: "James Jones",
-    read: "yes",
-    pages: "682"
-},
-]
-loadLibrary();
+
+
+
 
 function book(title, author, read, pages) {
     this.title = title;
@@ -122,7 +123,7 @@ function createForm() {
 } */
 
 function createCard(book) {
-    containerCard = booksContainer.appendChild(createDiv("Card", `containerCard${mylibrary.indexOf(book)}`))
+    containerCard = booksContainer.appendChild(createDiv("Card", `containerCard${library.indexOf(book)}`))
     imageCard = createDiv("imageCard");
     containerCard.appendChild(imageCard)
     image = document.createElement('img')
@@ -145,12 +146,12 @@ function createCard(book) {
             text: book.pages
         },
         {
-            id: `readCard${mylibrary.indexOf(book)}`,
+            id: `readCard${library.indexOf(book)}`,
             class: "readCard",
             text: book.read
         }, 
         {
-            id: `buttons${mylibrary.indexOf(book)}`,
+            id: `buttons${library.indexOf(book)}`,
             class: "buttons",
             text: ""
         }
@@ -164,11 +165,11 @@ function createCard(book) {
         if (element.class === "pagesCard") newDiv.type = "number";
         containerCard.appendChild(newDiv)
     });
-    buttons = document.getElementById(`buttons${mylibrary.indexOf(book)}`)
+    buttons = document.getElementById(`buttons${library.indexOf(book)}`)
     button = document.createElement("button");
     button.id = `l`
     button.innerText = "delete";
-    button.setAttribute("data-bookid", `${mylibrary.indexOf(book)}`)
+    button.setAttribute("data-bookid", `${library.indexOf(book)}`)
     button.classList.add("buttonSmall")
     buttons.appendChild(button)
     document.getElementById(`l`)
@@ -176,7 +177,7 @@ function createCard(book) {
     button2 = document.createElement("button");
     button2.id = `r`
     button2.innerText = "read";
-    button2.setAttribute("data-bookid", `${mylibrary.indexOf(book)}`)
+    button2.setAttribute("data-bookid", `${library.indexOf(book)}`)
     button2.classList.add("buttonSmall")
     buttons.appendChild(button2)
 
@@ -197,7 +198,10 @@ function addBookToLibrary() {
     /* read = document.getElementById("readForm").value; */
     newBook = new book(title, author, read, pages);
     console.log(newBook, "ffff");
-    mylibrary.push(newBook);
+    
+    library.push(newBook);
+    libraryJson = JSON.stringify(library);
+    localStorage.myLibrary = libraryJson;
 
     clearForm();
     createCard(newBook);
@@ -213,13 +217,18 @@ function clearForm() {
 }
 
 function deleteCard() {
+    index = this.getAttribute("data-bookid");
+    library.splice(index, 1);
+    libraryJson = JSON.stringify(library);
+    localStorage.myLibrary = libraryJson;
+    
     cardId = document.getElementById(`containerCard${this.getAttribute("data-bookid")}`);
     cardId.remove();
 }
 function isRead() {
-    let isReadProp = mylibrary[this.getAttribute("data-bookid")].read;
+    let isReadProp = library[this.getAttribute("data-bookid")].read;
     isReadProp = (isReadProp === "yes") ? "no" : "yes";
-    mylibrary[this.getAttribute("data-bookid")].read = isReadProp;
+    library[this.getAttribute("data-bookid")].read = isReadProp;
     const isItReadDiv = document.getElementById(`readCard${this.getAttribute("data-bookid")}`);
     isItReadDiv.innerText = `${isReadProp}`
 }
