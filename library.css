@@ -91,7 +91,7 @@
 }
  */
 
- .Card {
+ .card {
    display: flex;
    align-items: center;
    flex-direction: column;
@@ -123,27 +123,30 @@
    margin-top: 20px;
  }
 
- .buttonSmall {
+ .delete {
    color: var(--textNav);
    height: 50px;
    width: 100px;
    cursor: pointer;
    border: var(--border) solid;
-   border: var(--border) solid;
+   border-width: 1px 0 0 0;
+   border-bottom-left-radius: 10px;
    border-bottom: 0px;
    background-color: var(--light);
  }
+ .read {
+  color: var(--textNav);
+  height: 50px;
+  width: 100px;
+  cursor: pointer;
+  border: var(--border) solid;
+  border-width: 1px 0 0 1px;
+  border-bottom-right-radius: 10px;
+  border-bottom: 0px;
+  background-color: var(--light);
+}
 
- #l {
-   border-width: 1px 0 0 0;
-   border-bottom-left-radius: 10px;
- }
-
- #r {
-   border-width: 1px 0 0 1px;
-   border-bottom-right-radius: 10px;
- }
- #submitBookData{
+  #submitBookData{
   border-width: 1px 1px 0 1px;
  }
 
