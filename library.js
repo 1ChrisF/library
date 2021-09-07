@@ -1,8 +1,17 @@
 const booksContainer = document.getElementById("books");
 let library = [];
-let libraryJson = "";
+sampleBooks = [
+    theThing = new book("The thing", "This Guy", 287, true),
+    theThing2 = new book("The thing 2 ", "That Guy", 302, false)
+];
 
-if (localStorage.myLibrary === null || localStorage.myLibrary === "[]") {
+if (localStorage.getItem("myLibrary") === null) {
+    sampleBooks.forEach(element =>
+        library.push(element));
+    library.forEach(element => {
+
+        createCard(element);
+    });
     renderCallForm()
 } else {
     loadLibrary();
@@ -10,9 +19,17 @@ if (localStorage.myLibrary === null || localStorage.myLibrary === "[]") {
 
 function loadLibrary() {
     library = JSON.parse(localStorage.myLibrary);
-    library.forEach(element => {
-        createCard(element);
+    library.forEach(ele => {
+        ele.readToggle = function () {
+            this.read = !this.read;
+        };
+        createCard(ele);
+
     })
+    const btn2 = document.querySelectorAll(".read");
+    for (i = 0; i < btn2.length; ++i) {
+        btn2[i].setAttribute("data-book", `${i}`);
+    }
 }
 function books() {
 
@@ -20,50 +37,48 @@ function books() {
 
 function isRead() {
     let bookIndex = this.getAttribute("data-book");
-    read = (library[bookIndex].read === "yes") ? "no" : "yes";
-    library[bookIndex].read = read;
+    library[bookIndex].readToggle();
+    read = library[bookIndex].read
     red = "background-Color:rgb(100, 30, 39);"
     green = "background-Color:rgb(30, 100, 39);"
-    this.style = (read === "yes") ? `${green}` : `${red}`;
+    this.style = (read === true) ? `${green}` : `${red}`;
     libraryJson = JSON.stringify(library);
     localStorage.myLibrary = libraryJson;
 }
 
-books.prototype.info = function () {
-    message = `${this.title} by ${this.author}, ${this.pages} long, not yet ${this.read}`
-    return message;
-}
-book.prototype = Object.create(books.prototype)
-
-function book(title, author, read, pages) {
+function book(title, author, pages, read) {
     {
         this.title = title;
         this.author = author;
         this.pages = pages;
         this.read = read;
-
     }
 }
 
+book.prototype.readToggle = function () {
+    this.read = !this.read;
+};
+
 function addBookToLibrary() {
 
-    title = document.getElementById("titleForm").value;
-    author = document.getElementById("authorForm").value;
-    pages = document.getElementById("pagesForm").value
-    read = document.getElementById("readForm").value
-    newBook = new book(title, author, read, pages);
+    title = document.getElementById("title").value;
+    author = document.getElementById("author").value;
+    pages = document.getElementById("pages").value
+    read = document.getElementById("read").checked
+    if(title.value){
+    newBook = new book(title, author, pages, read);
     library.push(newBook);
     libraryJson = JSON.stringify(library);
     localStorage.myLibrary = libraryJson;
     clearForm();
     createCard(newBook);
+    }
 }
 
 function createCard(newbook) {
 
     containerCard = booksContainer.appendChild(createDiv("card"))
     booksContainer.appendChild(containerCard);
-
     imageCard = createDiv("imageCard");
     containerCard.appendChild(imageCard)
     image = document.createElement('img')
@@ -71,29 +86,14 @@ function createCard(newbook) {
     imageCard.appendChild(image);
 
     const cardDivs = [
-        {
-            class: "titleCard",
-            text: newbook.title
-        },
-        {
-            class: "authorCard",
-            text: newbook.author
-        },
-        {
-            class: "pagesCard",
-            text: `pages: ${newbook.pages}`
-        },
-        {
-            class: "buttons",
-            text: ""
-        }
-    ];
-    cardDivs.forEach(element => {
-        const newDiv = createDiv(element.class)
-        newDiv.innerText = `${element.text}`
-        newDiv.setAttribute("data-book", `${library.indexOf(newbook)}`);
-        if (element.class === "pagesCard") newDiv.type = "number";
-        containerCard.appendChild(newDiv)
+        createDiv("titleCard", newbook.title ),
+        createDiv("authorCard", newbook.author),
+        createDiv("pagesCard", `pages: ${newbook.pages}`),      
+        createDiv("buttons", "")
+    ];    
+    cardDivs.forEach(element => {       
+       element.setAttribute("data-book", `${library.indexOf(newbook)}`);
+        containerCard.appendChild(element)
     });
     buttonsDiv = containerCard.lastChild;
     button = document.createElement("button");
@@ -108,19 +108,17 @@ function createCard(newbook) {
     button2.setAttribute("data-book", `${library.indexOf(newbook)}`)
     red = "background-Color:rgb(100, 30, 39);"
     green = "background-Color:rgb(30, 100, 39);"
-    button2.style = (newbook.read === "yes") ? green : red;
+    button2.style = (newbook.read === true) ? green : red;
     button2.classList.add("read")
     buttonsDiv.appendChild(button2)
     button2.addEventListener("click", isRead)
-
     renderCallForm();
 }
 
 function deleteCard() {
     bookid = this.getAttribute("data-book");
     library.splice(bookid, 1);
-    libraryJson = JSON.stringify(library);
-    localStorage.myLibrary = libraryJson;
+    localStorage.myLibrary = JSON.stringify(library);
     this.parentNode.parentNode.remove()
 
     const btn2 = document.querySelectorAll(".read");
@@ -129,19 +127,20 @@ function deleteCard() {
     }
 }
 
-function createDiv(divClass) {
+function createDiv(divClass, innerText) {
     const div = document.createElement('div');
     div.classList.add(divClass);
+   if(innerText)div.innerText = innerText;
     return div;
 }
 
-function createInput(inputId, inputClass) {
-    const input = document.createElement('input')
-    input.id = inputId;
-    input.classList.add(inputClass);
-    input.type = "text";
-    input.lable = inputId;
-    return input;
+function createInput(inputId, inputClass, html, type, innerText) {
+    const formEle = document.createElement(html)
+    formEle.id = inputId;
+    formEle.classList.add(inputClass);
+    formEle.type = type;
+    formEle.innerText = innerText;
+    return formEle;
 }
 
 function renderCallForm() {
@@ -150,57 +149,48 @@ function renderCallForm() {
         callForm.id = "newBook"
         booksContainer.appendChild(callForm);
         document.getElementById("newBook")
-            .addEventListener('click', createForm);
+            .addEventListener('click', renderForm);
         plus = document.createElement("p")
         plus.innerText = "+"
         callForm.appendChild(plus);
     }
 }
 
-function createForm() {
+function renderForm() {
     let newBookButton = document.getElementById("newBook")
     newBookButton.remove();
-    /* if (document.getElementById("containerForm")) { return } */
     containerForm = createDiv("form");
     containerForm.id = "containerForm"
     booksContainer.appendChild(containerForm);
+    addImage = createDiv("addImage");
+    addImage.innerText = "add \n image!"
+    containerForm.appendChild(addImage);
+    const form = document.createElement("form")
+    containerForm.appendChild(form);
     const formInputs = [
-        {
-            id: "authorForm",
-            class: "form",
-            auto: "off"
-        },
-        {
-            id: "titleForm",
-            class: "form",
-            auto: "off"
-        },
-        {
-            id: "pagesForm",
-            class: "form",
-            auto: "off"
-        },
-        {
-            id: "readForm",
-            class: "form",
-            auto: "off"
-        }
-    ];
-    formInputs.forEach(element => {
-        const input = createInput(element.id, element.class)
-        if (element.id === "pagesForm") input.type = "number";
-        input.autocomplete = element.auto
-        containerForm.appendChild(input)
+        createInput("", "form", "lable", "text", "Author"),
+        createInput("author", "form", "input", "text"),
+        createInput("", "form", "lable", "text", "Title"),
+        createInput("title", "form", "input", "text"),
+        createInput("", "form", "lable", "text", "Pages"),
+        createInput("pages", "form", "input", "number"),
+        createInput("", "form", "lable", "text", "Have you read it?"),
+        createInput("read", "form", "input", "checkbox"),
 
+    ];
+    temp = new DocumentFragment()
+    formInputs.forEach(element => {
+        element.setAttribute("autoComplete", "off")
+        temp.appendChild(element)
     });
+    form.appendChild(temp);
     button = document.createElement("button");
     button.id = "submitBookData";
     button.innerText = "Add Book"
     button.classList.add("buttonSmall")
-    containerForm.appendChild(button)
+    form.appendChild(button)
     document.getElementById("submitBookData")
         .addEventListener("click", addBookToLibrary);
-
 }
 
 function clearForm() {
