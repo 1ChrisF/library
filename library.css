@@ -5,6 +5,7 @@
    --textNav: rgb(183, 191, 216);
    --border: rgb(175, 100, 50);
    --borderActive: rgb(238, 115, 34);
+   --hover: rgb(94, 95, 144);
  }
 
  body {
@@ -54,7 +55,8 @@
 
  .button p {
    color: rgb(124, 78, 47);
-   top: 50%;
+    
+   
  }
 
  #containerForm {
@@ -72,18 +74,16 @@
 
  .form {
    color: var(--light);
-  background-color:var(--light);
+   background-color: var(--light);
    border: 1px var(--border) solid;
    width: 120px;
    height: 35px;
+   margin:10px;
  }
- .form:focus {
-  background-color:var(--light);
-  outline: 0;
-  border: 1px var(--borderActive) solid;
-  width: 120px;
-  height: 35px;
-}
+
+ .form:focus {   
+   outline: 0;  
+ }
 
  /* #submitBookData {
   width: 50px;
@@ -104,16 +104,23 @@
  }
 
  .titleCard {
+   
    background-color: var(--medium);
-   width: 200px;
-   height: 50px;
+   width: 190px;
+   font-weight: bold;
+   height: 25px;
+   font-size: 20px;
+   margin-left: 10px;
  }
 
  .authorCard {
    background-color: var(--medium);
-   width: 200px;
-   height: 50px;
+   width: 190px;
+   height: 90px;
+   margin-left: 10px;
    margin-bottom: 20px;
+   font-size: 15px;
+   left: 10px;
  }
 
  img {
@@ -134,20 +141,39 @@
    border-bottom: 0px;
    background-color: var(--light);
  }
- .read {
-  color: var(--textNav);
-  height: 50px;
-  width: 100px;
-  cursor: pointer;
-  border: var(--border) solid;
-  border-width: 1px 0 0 1px;
-  border-bottom-right-radius: 10px;
-  border-bottom: 0px;
-  background-color: var(--light);
-}
 
-  #submitBookData{
-  border-width: 1px 1px 0 1px;
+ .read {
+   color: var(--textNav);
+   height: 50px;
+   width: 100px;
+   cursor: pointer;
+   border: var(--border) solid;
+   border-width: 1px 0 0 1px;
+   border-bottom-right-radius: 10px;
+   border-bottom: 0px;
+   background-color: var(--light);
+ }
+
+ .read:hover {
+   background-color: var(--hover);
+ }
+
+ .delete:hover {
+   background-color: var(--hover);
+ }
+
+ #submitBookData {
+   border-width: 1px 1px 0 1px;
+ }
+
+ .buttonSmall {
+   color: var(--textNav);
+   height: 50px;
+   width: 100px;
+   border: 1px var(--border) solid;
+   border-width: 1px 0 0 1px;
+   background-color: var(--light);
+   cursor: pointer;
  }
 
  .buttonSmall:hover {

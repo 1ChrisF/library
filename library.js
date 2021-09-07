@@ -1,35 +1,39 @@
-
 const booksContainer = document.getElementById("books");
 let library = [];
 let libraryJson = "";
 
-if (localStorage.myLibrary) {
+if (localStorage.myLibrary === null || localStorage.myLibrary === "[]") {
+    renderCallForm()
+} else {
     loadLibrary();
-}
+};
 
 function loadLibrary() {
     library = JSON.parse(localStorage.myLibrary);
-    
     library.forEach(element => {
         createCard(element);
     })
+}
+function books() {
 
 }
-function isRead() {
-    const bookIndex = this.getAttribute("data-book");
-    let isReadProp = library[bookIndex].read;
-    let read = (isReadProp === "yes") ? "no" : "yes";
-    library[bookIndex].read = read;
-    const isItReadDiv = document.querySelectorAll(".readCard")
-    isItReadDiv.forEach(element => {
-        if (element.getAttribute("data-book") === bookIndex) {
-            element.innerText = `${read}`
-        }
 
-    });    
+function isRead() {
+    let bookIndex = this.getAttribute("data-book");
+    read = (library[bookIndex].read === "yes") ? "no" : "yes";
+    library[bookIndex].read = read;
+    red = "background-Color:rgb(100, 30, 39);"
+    green = "background-Color:rgb(30, 100, 39);"
+    this.style = (read === "yes") ? `${green}` : `${red}`;
     libraryJson = JSON.stringify(library);
     localStorage.myLibrary = libraryJson;
 }
+
+books.prototype.info = function () {
+    message = `${this.title} by ${this.author}, ${this.pages} long, not yet ${this.read}`
+    return message;
+}
+book.prototype = Object.create(books.prototype)
 
 function book(title, author, read, pages) {
     {
@@ -37,19 +41,97 @@ function book(title, author, read, pages) {
         this.author = author;
         this.pages = pages;
         this.read = read;
-    }
 
+    }
 }
 
+function addBookToLibrary() {
 
+    title = document.getElementById("titleForm").value;
+    author = document.getElementById("authorForm").value;
+    pages = document.getElementById("pagesForm").value
+    read = document.getElementById("readForm").value
+    newBook = new book(title, author, read, pages);
+    library.push(newBook);
+    libraryJson = JSON.stringify(library);
+    localStorage.myLibrary = libraryJson;
+    clearForm();
+    createCard(newBook);
+}
 
-renderCallForm();
+function createCard(newbook) {
 
-function createDiv(divClass, divId) {
+    containerCard = booksContainer.appendChild(createDiv("card"))
+    booksContainer.appendChild(containerCard);
+
+    imageCard = createDiv("imageCard");
+    containerCard.appendChild(imageCard)
+    image = document.createElement('img')
+    image.src = "images/bookDefault.png";
+    imageCard.appendChild(image);
+
+    const cardDivs = [
+        {
+            class: "titleCard",
+            text: newbook.title
+        },
+        {
+            class: "authorCard",
+            text: newbook.author
+        },
+        {
+            class: "pagesCard",
+            text: `pages: ${newbook.pages}`
+        },
+        {
+            class: "buttons",
+            text: ""
+        }
+    ];
+    cardDivs.forEach(element => {
+        const newDiv = createDiv(element.class)
+        newDiv.innerText = `${element.text}`
+        newDiv.setAttribute("data-book", `${library.indexOf(newbook)}`);
+        if (element.class === "pagesCard") newDiv.type = "number";
+        containerCard.appendChild(newDiv)
+    });
+    buttonsDiv = containerCard.lastChild;
+    button = document.createElement("button");
+    button.innerText = "delete";
+    button.setAttribute("data-book", `${library.indexOf(newbook)}`)
+    button.classList.add("delete")
+    buttonsDiv.appendChild(button)
+    button.addEventListener("click", deleteCard);
+
+    button2 = document.createElement("button");
+    button2.innerText = "read";
+    button2.setAttribute("data-book", `${library.indexOf(newbook)}`)
+    red = "background-Color:rgb(100, 30, 39);"
+    green = "background-Color:rgb(30, 100, 39);"
+    button2.style = (newbook.read === "yes") ? green : red;
+    button2.classList.add("read")
+    buttonsDiv.appendChild(button2)
+    button2.addEventListener("click", isRead)
+
+    renderCallForm();
+}
+
+function deleteCard() {
+    bookid = this.getAttribute("data-book");
+    library.splice(bookid, 1);
+    libraryJson = JSON.stringify(library);
+    localStorage.myLibrary = libraryJson;
+    this.parentNode.parentNode.remove()
+
+    const btn2 = document.querySelectorAll(".read");
+    for (i = 0; i < btn2.length; ++i) {
+        btn2[i].setAttribute("data-book", `${i}`);
+    }
+}
+
+function createDiv(divClass) {
     const div = document.createElement('div');
-    if (divId != "") { div.id = divId };
     div.classList.add(divClass);
-    div.type = "text";
     return div;
 }
 
@@ -63,8 +145,9 @@ function createInput(inputId, inputClass) {
 }
 
 function renderCallForm() {
-    if (document.getElementById("newBook") === null) {
-        callForm = createDiv("button", "newBook");
+    if (!document.getElementById("newBook")) {
+        callForm = createDiv("button");
+        callForm.id = "newBook"
         booksContainer.appendChild(callForm);
         document.getElementById("newBook")
             .addEventListener('click', createForm);
@@ -77,8 +160,9 @@ function renderCallForm() {
 function createForm() {
     let newBookButton = document.getElementById("newBook")
     newBookButton.remove();
-    if (document.getElementById("containerForm")) { return }
-    containerForm = createDiv("form", "containerForm");
+    /* if (document.getElementById("containerForm")) { return } */
+    containerForm = createDiv("form");
+    containerForm.id = "containerForm"
     booksContainer.appendChild(containerForm);
     const formInputs = [
         {
@@ -119,82 +203,6 @@ function createForm() {
 
 }
 
-function createCard(newbook) {
-
-    containerCard = booksContainer.appendChild(createDiv("card", `containerCard${library.indexOf(newbook)}`))
-    containerCard.setAttribute("data-book", `${library.indexOf(newbook)}`);
-    books.appendChild(containerCard);
-    imageCard = createDiv("imageCard");
-    containerCard.appendChild(imageCard)
-    image = document.createElement('img')
-    image.src = "images/bookDefault.png";
-    imageCard.appendChild(image);
-    const cardDivs = [
-        {
-            id: "",
-            class: "titleCard",
-            text: newbook.title
-        },
-        {
-            id: "",
-            class: "authorCard",
-            text: newbook.author
-        },
-        {
-            id: "",
-            class: "pagesCard",
-            text: newbook.pages
-        },
-        {
-            id: "",
-            
-            class: "readCard",
-            text: newbook.read
-        }
-    ];
-    cardDivs.forEach(element => {
-        const newDiv = createDiv(element.class, element.id)
-        newDiv.innerText = `${element.text}`
-        newDiv.setAttribute("data-book", `${library.indexOf(newbook)}`);
-        if (element.class === "pagesCard") newDiv.type = "number";
-        containerCard.appendChild(newDiv)
-    });
-    const buttonsDiv = createDiv("buttons", "")
-    containerCard.appendChild(buttonsDiv)
-    //buttonsDiv.setAttribute("data-book", `${library.indexOf(newbook)}`);
-
-    button = document.createElement("button");
-    button.innerText = "delete";
-    button.setAttribute("data-book", `${library.indexOf(newbook)}`)
-    button.classList.add("delete")
-    buttonsDiv.appendChild(button)
-    button.addEventListener("click", deleteCard);
-
-    button2 = document.createElement("button");
-    button2.innerText = "read";
-    button2.setAttribute("data-book", `${library.indexOf(newbook)}`)
-    button2.classList.add("read")
-    buttonsDiv.appendChild(button2)
-    button2.addEventListener("click", isRead);
-    renderCallForm();
-
-}
-
-function addBookToLibrary() {
-
-    title = document.getElementById("titleForm").value;
-    author = document.getElementById("authorForm").value;
-    pages = document.getElementById("pagesForm").value
-    read = document.getElementById("readForm").value
-    newBook = new book(title, author, read, pages);
-    library.push(newBook);
-    libraryJson = JSON.stringify(library);
-    localStorage.myLibrary = libraryJson;
-    clearForm();
-    createCard(newBook);
-
-}
-
 function clearForm() {
     const formEl = document.querySelectorAll(".form")
     formEl.forEach(element => {
@@ -203,44 +211,3 @@ function clearForm() {
     });
 }
 
-function deleteCard() {
-    bookid = this.getAttribute("data-book");
-    library.splice(bookid, 1);
-    libraryJson = JSON.stringify(library);
-    localStorage.myLibrary = libraryJson;
-
-
-    card = document.querySelectorAll(".card")
-    card.forEach(element => {
-        if (element.getAttribute("data-book") === bookid) {
-            element.remove();
-        }
-    });
-
-    const cards = document.querySelectorAll(".card");
-    const btn = document.querySelectorAll(".delete");
-    const btn2 = document.querySelectorAll(".read");
-    const outPut = document.querySelectorAll(".readCard")
-
-    for (i = 0; i < cards.length; ++i) {
-        cards[i].setAttribute("data-book", `${i}`);
-
-
-    }
-    for (i = 0; i < btn.length; ++i) {
-        btn[i].setAttribute("data-book", `${i}`);
-
-
-    }
-    for (i = 0; i < btn2.length; ++i) {
-        btn2[i].setAttribute("data-book", `${i}`);
-
-
-    }
-    for (i = 0; i < btn2.length; ++i) {
-        outPut[i].setAttribute("data-book", `${i}`);
-
-
-    }
-
-}
