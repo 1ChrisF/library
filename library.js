@@ -5,7 +5,7 @@ sampleBooks = [
     theThing2 = new book("The thing 2 ", "That Guy", 302, false)
 ];
 
-if (localStorage.getItem("myLibrary") === null) {
+if (sessionStorage.getItem("myLibrary") === null) {
     sampleBooks.forEach(element =>
         library.push(element));
     library.forEach(element => {
@@ -18,7 +18,7 @@ if (localStorage.getItem("myLibrary") === null) {
 };
 
 function loadLibrary() {
-    library = JSON.parse(localStorage.myLibrary);
+    library = JSON.parse(sessionStorage.myLibrary);
     library.forEach(ele => {
         ele.readToggle = function () {
             this.read = !this.read;
@@ -43,7 +43,7 @@ function isRead() {
     green = "background-Color:rgb(30, 100, 39);"
     this.style = (read === true) ? `${green}` : `${red}`;
     libraryJson = JSON.stringify(library);
-    localStorage.myLibrary = libraryJson;
+    sessionStorage.myLibrary = libraryJson;
 }
 
 function book(title, author, pages, read) {
@@ -65,14 +65,14 @@ function addBookToLibrary() {
     author = document.getElementById("author").value;
     pages = document.getElementById("pages").value
     read = document.getElementById("read").checked
-    if(title.value){
+    /* if(title.value){ */
     newBook = new book(title, author, pages, read);
     library.push(newBook);
     libraryJson = JSON.stringify(library);
-    localStorage.myLibrary = libraryJson;
+    sessionStorage.myLibrary = libraryJson;
     clearForm();
     createCard(newBook);
-    }
+    /* } */
 }
 
 function createCard(newbook) {
@@ -118,7 +118,7 @@ function createCard(newbook) {
 function deleteCard() {
     bookid = this.getAttribute("data-book");
     library.splice(bookid, 1);
-    localStorage.myLibrary = JSON.stringify(library);
+    sessionStorage.myLibrary = JSON.stringify(library);
     this.parentNode.parentNode.remove()
 
     const btn2 = document.querySelectorAll(".read");
