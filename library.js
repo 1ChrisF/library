@@ -5,7 +5,7 @@ sampleBooks = [
     theThing2 = new book("The thing 2 ", "That Guy", 302, false)
 ];
 
-if (localStorage.getItem("myLibrary") === null) {
+if (localStorage.getItem("myLibrary").length < 3) {
     sampleBooks.forEach(element =>
         library.push(element));
     library.forEach(element => {
