@@ -1,9 +1,18 @@
 const booksContainer = document.getElementById("books");
 let library = [];
 sampleBooks = [
-    theThing = new book("The thing", "This Guy", 287, true),
-    theThing2 = new book("The thing 2 ", "That Guy", 302, false)
+    theThing = new book("The thing", "This Guy", 287, true, "1"),
+    theThing2 = new book("The thing 2 ", "That Guy", 302, false, "2")
 ];
+
+function randomId() {
+    function s5() {
+      let string = Math.random().toString(16).substring(2, 7);
+      return string;
+    }
+    ranID = `${s5()}-${s5()}-${s5()}`;
+    return ranID;
+}
 
 if (localStorage.getItem("myLibrary").length < 3) {
     sampleBooks.forEach(element =>
@@ -36,9 +45,9 @@ function books() {
 }
 
 function isRead() {
-    let bookIndex = this.getAttribute("data-book");
-    library[bookIndex].readToggle();
-    read = library[bookIndex].read
+    let bookId = this.getAttribute("data-book");
+    library[library.findIndex((ele)=> ele.id == bookId)].readToggle();
+    read = library[library.findIndex((ele)=> ele.id == bookId)].read
     red = "background-Color:rgb(100, 30, 39);"
     green = "background-Color:rgb(30, 100, 39);"
     this.style = (read === true) ? `${green}` : `${red}`;
@@ -46,12 +55,13 @@ function isRead() {
     localStorage.myLibrary = libraryJson;
 }
 
-function book(title, author, pages, read) {
+function book(title, author, pages, read, id) {
     {
         this.title = title;
         this.author = author;
         this.pages = pages;
         this.read = read;
+        this.id = id;
     }
 }
 
@@ -65,8 +75,9 @@ function addBookToLibrary() {
     author = document.getElementById("author").value;
     pages = document.getElementById("pages").value
     read = document.getElementById("read").checked
+    id = randomId();
     /* if(title.value){ */
-    newBook = new book(title, author, pages, read);
+    newBook = new book(title, author, pages, read, id);
     library.push(newBook);
     libraryJson = JSON.stringify(library);
     localStorage.myLibrary = libraryJson;
@@ -86,26 +97,25 @@ function createCard(newbook) {
     imageCard.appendChild(image);
 
     const cardDivs = [
-        createDiv("titleCard", newbook.title ),
+        createDiv("titleCard", newbook.title),
         createDiv("authorCard", newbook.author),
-        createDiv("pagesCard", `pages: ${newbook.pages}`),      
+        createDiv("pagesCard", `pages: ${newbook.pages}`),
         createDiv("buttons", "")
-    ];    
-    cardDivs.forEach(element => {       
-       element.setAttribute("data-book", `${library.indexOf(newbook)}`);
-        containerCard.appendChild(element)
+    ];
+    cardDivs.forEach(element => {        
+        containerCard.appendChild(element);
     });
     buttonsDiv = containerCard.lastChild;
     button = document.createElement("button");
     button.innerText = "delete";
-    button.setAttribute("data-book", `${library.indexOf(newbook)}`)
+    button.setAttribute("data-book", `${newbook.id}`)
     button.classList.add("delete")
     buttonsDiv.appendChild(button)
     button.addEventListener("click", deleteCard);
 
     button2 = document.createElement("button");
     button2.innerText = "read";
-    button2.setAttribute("data-book", `${library.indexOf(newbook)}`)
+    button2.setAttribute("data-book", `${newbook.id}`)
     red = "background-Color:rgb(100, 30, 39);"
     green = "background-Color:rgb(30, 100, 39);"
     button2.style = (newbook.read === true) ? green : red;
@@ -117,20 +127,18 @@ function createCard(newbook) {
 
 function deleteCard() {
     bookid = this.getAttribute("data-book");
-    library.splice(bookid, 1);
+    
+    library.splice(library.findIndex((ele)=> ele.id == bookid), 1);
     localStorage.myLibrary = JSON.stringify(library);
     this.parentNode.parentNode.remove()
 
-    const btn2 = document.querySelectorAll(".read");
-    for (i = 0; i < btn2.length; ++i) {
-        btn2[i].setAttribute("data-book", `${i}`);
-    }
+    
 }
 
 function createDiv(divClass, innerText) {
     const div = document.createElement('div');
     div.classList.add(divClass);
-   if(innerText)div.innerText = innerText;
+    if (innerText) div.innerText = innerText;
     return div;
 }
 
